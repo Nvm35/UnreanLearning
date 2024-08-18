@@ -4,3 +4,4 @@
 
 #include "CoreMinimal.h"
 
+#define DrawLine(StartLocation, EndLocation) if(GetWorld()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Black, true, -1.f, 0, 1.f);
