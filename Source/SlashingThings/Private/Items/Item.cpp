@@ -10,23 +10,35 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
-	FVector Location = GetActorLocation();
-	FVector Forward = GetActorForwardVector();
+	//UWorld* World = GetWorld();
 
-	//DrawLine(Location, Location + Forward * 100.f);
-	DrawSphere(Location);
+	//SetActorLocation(FVector(0.f, 0.f, 160.f));
+	//SetActorRotation(FRotator(0.f, 45.f, 0.f));
+	//FVector Location = GetActorLocation();
+	//FVector Forward = GetActorForwardVector();
+
+
+	//DrawSphere(Location);
 	//if (World) {
 	//	DrawDebugSphere(World, Location, 32.f, 24, FColor::Emerald, false, 60.f);
 	//}
 	//DRAW_POINT(Location + Forward * 100.f);
-	DRAW_VECTOR(Location, Location + Forward * 500.f)
+	//DRAW_VECTOR(Location, Location + Forward * 500.f)
 }
 
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	float MovementRate = 50.f;
+	float RotationRate = 30.f;
+
+
+	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
+	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
+	DRAW_SPHERE_SINGLEFRAME(GetActorLocation());
+	DRAW_VECTOR_SIGNLEFRAME(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100)
 
 }
 
