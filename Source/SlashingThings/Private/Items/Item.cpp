@@ -1,6 +1,6 @@
-
 #include "Items/Item.h"
 #include "SlashingThings/DebugMacros.h"
+
 AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -31,14 +31,16 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float MovementRate = 50.f;
+	/*float MovementRate = 50.f;
 	float RotationRate = 30.f;
-
-
 	AddActorWorldOffset(FVector(MovementRate * DeltaTime, 0.f, 0.f));
-	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));
+	AddActorWorldRotation(FRotator(0.f, RotationRate * DeltaTime, 0.f));*/
+
+	RunningTime += DeltaTime;
+
+	float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
+
+	AddActorWorldOffset(FVector(0.f, 0.f, DeltaZ));
 	DRAW_SPHERE_SINGLEFRAME(GetActorLocation());
 	DRAW_VECTOR_SIGNLEFRAME(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100)
-
 }
-

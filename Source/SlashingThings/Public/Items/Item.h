@@ -10,8 +10,8 @@ UCLASS()
 class SLASHINGTHINGS_API AItem : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 
@@ -19,4 +19,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	float RunningTime;
+
+	UPROPERTY(EditAnywhere)
+	float Amplitude = 0.25f;
+
+	UPROPERTY(EditInstanceOnly)
+	float TimeConstant = 5.f;
 };
