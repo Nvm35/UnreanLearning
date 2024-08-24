@@ -10,6 +10,9 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 
+	int32 AvgInt = Avg<int32>(1, 3);
+	UE_LOG(LogTemp, Warning, TEXT("AVG = %d"), AvgInt);
+
 	//UWorld* World = GetWorld();
 
 	//SetActorLocation(FVector(0.f, 0.f, 160.f));
@@ -26,6 +29,20 @@ void AItem::BeginPlay()
 	//DRAW_VECTOR(Location, Location + Forward * 500.f)
 }
 
+float AItem::TransformedSin()
+{
+	return Amplitude * FMath::Sin(RunningTime * TimeConstant);
+}
+
+float AItem::TransformedCos()
+{
+	return Amplitude * FMath::Cos(RunningTime * TimeConstant);
+}
+
+
+
+
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -38,9 +55,9 @@ void AItem::Tick(float DeltaTime)
 
 	RunningTime += DeltaTime;
 
-	float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
+	//float DeltaZ = Amplitude * FMath::Sin(RunningTime * TimeConstant);
 
-	AddActorWorldOffset(FVector(0.f, 0.f, DeltaZ));
+	//AddActorWorldOffset(FVector(0.f, 0.f, DeltaZ));
 	DRAW_SPHERE_SINGLEFRAME(GetActorLocation());
 	DRAW_VECTOR_SIGNLEFRAME(GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 100)
 }
