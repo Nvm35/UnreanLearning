@@ -3,8 +3,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Components/CapsuleComponent.h"
 #include "Bird.generated.h"
+
+class UCapsuleComponent;
+class USkeletalMeshComponent;
+class USpringArmComponent;
+class UCameraComponent;
+
 
 UCLASS()
 class SLASHINGTHINGS_API ABird : public APawn
@@ -18,11 +23,21 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void MoveForward(float Value);
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent* Capsule;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* BirdMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* ViewCamera;
 
 };
