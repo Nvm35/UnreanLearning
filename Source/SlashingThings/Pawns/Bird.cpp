@@ -43,6 +43,17 @@ void ABird::MoveForward(float Value)
 	}
 }
 
+void ABird::Turn(float Value)
+{
+	AddControllerYawInput(Value);
+}
+
+void ABird::LookUp(float Value)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This message will show on the screen!"));
+	AddControllerPitchInput(Value);
+}
+
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -53,5 +64,8 @@ void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis(FName("MoveForward"), this, &ABird::MoveForward);
+	PlayerInputComponent->BindAxis(FName("Turn"), this, &ABird::Turn);
+	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ABird::LookUp);
+
 }
 
