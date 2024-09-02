@@ -4,6 +4,10 @@
 #include "GameFramework/Character.h"
 #include "SlashChatacters.generated.h"
 
+
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class SLASHINGTHINGS_API ASlashChatacters : public ACharacter
 {
@@ -19,6 +23,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void	MoveForward(float Value);
+	void MoveForward(float Value);
+	void Turn(float Value);
+	void LookUp(float Value);
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* ViewCamera;
 
 };
