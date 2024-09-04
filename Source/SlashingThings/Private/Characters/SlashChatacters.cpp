@@ -2,6 +2,8 @@
 #include "Characters/SlashChatacters.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 ASlashChatacters::ASlashChatacters()
 {
@@ -10,6 +12,9 @@ ASlashChatacters::ASlashChatacters()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
@@ -43,8 +48,12 @@ void ASlashChatacters::MoveSides(float Value)
 {
 	if (Controller && (Value != 0.f))
 	{
-		FVector Sides = GetActorRightVector();
-		AddMovementInput(Sides, Value);
+		/*FVector Sides = GetActorRightVector();
+		AddMovementInput(Sides, Value);*/
+		const FRotator ControlRotation = GetControlRotation();
+		const FRotator YawRotation(0.f, ControlRotation.Yaw, 0.f);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, Value);
 	}
 }
 
@@ -69,9 +78,9 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis(FName("MoveForward"), this, &ASlashChatacters::MoveForward);
+	PlayerInputComponent->BindAxis(FName("MoveSides"), this, &ASlashChatacters::MoveSides);
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ASlashChatacters::Turn);
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ASlashChatacters::LookUp);
-	PlayerInputComponent->BindAxis(FName("MoveSides"), this, &ASlashChatacters::MoveSides);
 
 }
 
