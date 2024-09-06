@@ -90,6 +90,8 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &ASlashChatacters::Turn);
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ASlashChatacters::LookUp);
 
+	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
+
 }
 
 
