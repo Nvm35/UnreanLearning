@@ -29,6 +29,7 @@ void USlashAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (SlashCharacterMovement)
 	{
 		Speed = UKismetMathLibrary::VSizeXY(SlashCharacterMovement->Velocity);
+		IsFalling = SlashCharacterMovement->IsFalling();
 	}
 
 }

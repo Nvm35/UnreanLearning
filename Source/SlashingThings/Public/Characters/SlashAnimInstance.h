@@ -27,7 +27,7 @@ public:
 	float Speed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	bool bIsInAir;
+	bool IsFalling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 	bool bIsAccelerating;
