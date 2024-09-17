@@ -4,6 +4,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GroomComponent.h"
+#include "Items/Item.h"
+#include "Items/Weapon/Weapon.h"
 
 ASlashChatacters::ASlashChatacters()
 {
@@ -76,6 +78,15 @@ void ASlashChatacters::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
+void ASlashChatacters::EKeyPressed()
+{
+	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
+	if (OverlappingWeapon) {
+		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
+	}
+}
+
 void ASlashChatacters::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -91,6 +102,7 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &ASlashChatacters::LookUp);
 
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(FName("PickUp"), IE_Pressed, this, &ASlashChatacters::EKeyPressed);
 
 }
 
