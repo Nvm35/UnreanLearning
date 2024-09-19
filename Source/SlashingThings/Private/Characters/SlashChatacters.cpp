@@ -6,6 +6,7 @@
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapon/Weapon.h"
+#include "Animation/AnimMontage.h"
 
 ASlashChatacters::ASlashChatacters()
 {
@@ -87,6 +88,44 @@ void ASlashChatacters::EKeyPressed()
 	}
 }
 
+void ASlashChatacters::Attack()
+{
+	if (ActionState == EActionState::EAS_Unoccupied)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void ASlashChatacters::PlayAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		int32 Selection = FMath::RandRange(0, 2);
+		FName SelectionName = FName();
+		switch (Selection)
+		{
+		default:
+			break;
+		case 0:
+			SelectionName = FName("one");
+			break;
+
+		case 1:
+			SelectionName = FName("two");
+			break;
+
+		case 2:
+			SelectionName = FName("three");
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SelectionName, AttackMontage);
+
+	}
+}
+
 void ASlashChatacters::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -103,6 +142,7 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(FName("PickUp"), IE_Pressed, this, &ASlashChatacters::EKeyPressed);
+	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &ASlashChatacters::Attack);
 
 }
 
