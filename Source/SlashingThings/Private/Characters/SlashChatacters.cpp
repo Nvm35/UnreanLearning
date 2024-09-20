@@ -90,7 +90,7 @@ void ASlashChatacters::EKeyPressed()
 
 void ASlashChatacters::Attack()
 {
-	if (ActionState == EActionState::EAS_Unoccupied)
+	if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped)
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
