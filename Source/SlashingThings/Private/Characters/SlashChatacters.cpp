@@ -44,6 +44,7 @@ void ASlashChatacters::BeginPlay()
 
 void ASlashChatacters::MoveForward(float Value)
 {
+	if (ActionState == EActionState::EAS_Attacking) return;
 	if (Controller && (Value != 0.f))
 	{
 		/*FVector Forward = GetActorForwardVector();
@@ -57,6 +58,7 @@ void ASlashChatacters::MoveForward(float Value)
 
 void ASlashChatacters::MoveSides(float Value)
 {
+	if (ActionState == EActionState::EAS_Attacking) return;
 	if (Controller && (Value != 0.f))
 	{
 		/*FVector Sides = GetActorRightVector();
