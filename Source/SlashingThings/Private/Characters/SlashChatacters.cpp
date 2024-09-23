@@ -81,14 +81,6 @@ void ASlashChatacters::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
-void ASlashChatacters::EKeyPressed()
-{
-	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
-	if (OverlappingWeapon) {
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
-		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
-	}
-}
 
 void ASlashChatacters::Attack()
 {
@@ -99,6 +91,37 @@ void ASlashChatacters::Attack()
 	}
 }
 
+void ASlashChatacters::EKeyPressed()
+{
+	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
+	if (OverlappingWeapon && !EquippedWeapon) {
+		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
+		EquippedWeapon = OverlappingWeapon;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TFuck!"));
+
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This message will show on the screen!"));
+		if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This message will show on the screen!"));
+
+			PlayEquipMontage(FName("Unequip"));
+			CharacterState = ECharacterState::ECS_Unequipped;
+		}
+		else if (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_Unequipped && EquippedWeapon)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("This message will show on the screen!"));
+
+			PlayEquipMontage(FName("Equip"));
+			CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
+		}
+	}
+}
+
+
 void ASlashChatacters::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -106,25 +129,35 @@ void ASlashChatacters::PlayAttackMontage()
 	{
 		AnimInstance->Montage_Play(AttackMontage);
 		int32 Selection = FMath::RandRange(0, 2);
-		FName SelectionName = FName();
+		FName SectionName = FName();
 		switch (Selection)
 		{
 		default:
 			break;
 		case 0:
-			SelectionName = FName("one");
+			SectionName = FName("one");
 			break;
 
 		case 1:
-			SelectionName = FName("two");
+			SectionName = FName("two");
 			break;
 
 		case 2:
-			SelectionName = FName("three");
+			SectionName = FName("three");
 			break;
 		}
-		AnimInstance->Montage_JumpToSection(SelectionName, AttackMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 
+	}
+}
+
+void ASlashChatacters::PlayEquipMontage(FName SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && EquipMontage)
+	{
+		AnimInstance->Montage_Play(EquipMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, EquipMontage);
 	}
 }
 

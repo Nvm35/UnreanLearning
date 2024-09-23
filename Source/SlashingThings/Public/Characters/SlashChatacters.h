@@ -11,6 +11,7 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
+class AWeapon;
 
 UCLASS()
 class SLASHINGTHINGS_API ASlashChatacters : public ACharacter
@@ -41,6 +42,7 @@ protected:
 	void Attack();
 
 	void PlayAttackMontage();
+	void PlayEquipMontage(FName SectionName);
 
 private:
 
@@ -67,4 +69,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* EquipMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	AWeapon* EquippedWeapon;
 };
