@@ -44,7 +44,7 @@ void ASlashChatacters::BeginPlay()
 
 void ASlashChatacters::MoveForward(float Value)
 {
-	if (ActionState == EActionState::EAS_Attacking) return;
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 	if (Controller && (Value != 0.f))
 	{
 		/*FVector Forward = GetActorForwardVector();
@@ -58,7 +58,7 @@ void ASlashChatacters::MoveForward(float Value)
 
 void ASlashChatacters::MoveSides(float Value)
 {
-	if (ActionState == EActionState::EAS_Attacking) return;
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 	if (Controller && (Value != 0.f))
 	{
 		/*FVector Sides = GetActorRightVector();
@@ -98,25 +98,20 @@ void ASlashChatacters::EKeyPressed()
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
 		EquippedWeapon = OverlappingWeapon;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TFuck!"));
-
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This message will show on the screen!"));
 		if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("This message will show on the screen!"));
-
 			PlayEquipMontage(FName("Unequip"));
 			CharacterState = ECharacterState::ECS_Unequipped;
+			ActionState = EActionState::EAS_Equipping;
 		}
 		else if (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_Unequipped && EquippedWeapon)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("This message will show on the screen!"));
-
 			PlayEquipMontage(FName("Equip"));
 			CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
+			ActionState = EActionState::EAS_Equipping;
 		}
 	}
 }
@@ -159,6 +154,27 @@ void ASlashChatacters::PlayEquipMontage(FName SectionName)
 		AnimInstance->Montage_Play(EquipMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, EquipMontage);
 	}
+}
+
+void ASlashChatacters::Disarm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
+}
+
+void ASlashChatacters::Arm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocket"));
+	}
+}
+
+void ASlashChatacters::FinishEquipping()
+{
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void ASlashChatacters::Tick(float DeltaTime)

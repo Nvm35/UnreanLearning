@@ -44,6 +44,15 @@ protected:
 	void PlayAttackMontage();
 	void PlayEquipMontage(FName SectionName);
 
+	UFUNCTION(BlueprintCallable)
+	void Disarm();
+
+	UFUNCTION(BlueprintCallable)
+	void Arm();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
+
 private:
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
