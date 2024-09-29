@@ -7,6 +7,7 @@
 #include "Items/Item.h"
 #include "Items/Weapon/Weapon.h"
 #include "Animation/AnimMontage.h"
+#include "Components/BoxComponent.h"
 
 ASlashChatacters::ASlashChatacters()
 {
@@ -81,6 +82,13 @@ void ASlashChatacters::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
+void ASlashChatacters::SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+	}
+}
 
 void ASlashChatacters::Attack()
 {
@@ -196,5 +204,7 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &ASlashChatacters::Attack);
 
 }
+
+
 
 

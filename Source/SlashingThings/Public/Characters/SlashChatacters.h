@@ -29,6 +29,11 @@ public:
 		OverlappingItem = Item;
 	}
 
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
+
+
+
 	FORCEINLINE ECharacterState GetChState() const { return CharacterState; };
 
 protected:
