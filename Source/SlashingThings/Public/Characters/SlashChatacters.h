@@ -33,7 +33,6 @@ public:
 	void SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
 
-
 	FORCEINLINE ECharacterState GetChState() const { return CharacterState; };
 
 protected:
@@ -79,6 +78,8 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
+
+	// Montages
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
