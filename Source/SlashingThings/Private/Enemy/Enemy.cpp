@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "SlashingThings/DebugMacros.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AEnemy::AEnemy()
 {
@@ -30,26 +31,7 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 	if (AnimInstance && HitReactMontage)
 	{
 		AnimInstance->Montage_Play(HitReactMontage);
-		/*	int32 Selection = FMath::RandRange(0, 2);
-			FName SectionName = FName();
-			switch (Selection)
-			{
-			default:
-				break;
-			case 0:
-				SectionName = FName("one");
-				break;
-
-			case 1:
-				SectionName = FName("two");
-				break;
-
-			case 2:
-				SectionName = FName("three");
-				break;
-			}*/
 		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
-
 	}
 }
 
@@ -68,6 +50,49 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::GetHit(const FVector& ImpactPoint)
 {
 	DRAW_SPHERE_WITH_COLOR(ImpactPoint, FColor::Magenta);
-	PlayHitReactMontage(FName("FromRight"));
+
+	const FVector Forward = GetActorForwardVector();
+	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
+
+	// Forward * ToHit = |Fo||ToH| * cos(theta)
+	const double CosTheta = FVector::DotProduct(Forward, ToHit);
+
+	double Theta = FMath::Acos(CosTheta);
+	//covert from radians to degress
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	//CrossProduct
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1.f;
+	}
+
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("Theta1: %f"), Theta));
+	}
+
+	FName Section("FromBack");
+	if (Theta >= 45.f && Theta < 45.f)
+	{
+		Section = FName("FromFront");
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName("FromLeft");
+	}
+	else if (Theta <= 45.f && Theta < 135.f)
+	{
+		Section = FName("FromRight");
+	}
+
+
+	PlayHitReactMontage(Section);
+
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossProduct * 100.f, 5.f, FColor::Red, 8.f, 2.f);
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Purple, 8.f, 2.f);
 }
 
