@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "SlashingThings/DebugMacros.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemy::AEnemy()
 {
@@ -49,8 +50,30 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::GetHit(const FVector& ImpactPoint)
 {
-	DRAW_SPHERE_WITH_COLOR(ImpactPoint, FColor::Magenta);
+	//DRAW_SPHERE_WITH_COLOR(ImpactPoint, FColor::Magenta);
 
+	DirectionalHitReact(ImpactPoint);
+
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+	if (HitParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ImpactPoint
+		);
+	}
+}
+
+void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
+{
 	const FVector Forward = GetActorForwardVector();
 	const FVector ImpactLowered(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
 	const FVector ToHit = (ImpactLowered - GetActorLocation()).GetSafeNormal();
@@ -70,13 +93,8 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 	}
 
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("Theta1: %f"), Theta));
-	}
-
 	FName Section("FromBack");
-	if (Theta >= 45.f && Theta < 45.f)
+	if (Theta >= -45.f && Theta < 45.f)
 	{
 		Section = FName("FromFront");
 	}
@@ -92,7 +110,12 @@ void AEnemy::GetHit(const FVector& ImpactPoint)
 
 	PlayHitReactMontage(Section);
 
+
+	/*	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("Theta1: %f"), Theta));
+	}
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + CrossProduct * 100.f, 5.f, FColor::Red, 8.f, 2.f);
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Purple, 8.f, 2.f);
+	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Purple, 8.f, 2.f);*/
 }
 
