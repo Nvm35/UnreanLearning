@@ -7,8 +7,7 @@ public class SlashingThings : ModuleRules
     public SlashingThings(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        //"HairStrandsCore", "Niagara"
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HairStrandsCore", "Niagara" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HairStrandsCore", "Niagara", "GeometryCollectionEngine" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
