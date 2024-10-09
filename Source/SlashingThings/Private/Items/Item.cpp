@@ -59,5 +59,8 @@ void AItem::Tick(float DeltaTime)
 	if (ItemState == EItemState::EIS_Hovering)
 	{
 		AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
+		FRotator Rotation = GetActorRotation();
+		Rotation.Yaw += 45.0f * DeltaTime; // 45 degrees per second
+		SetActorRotation(Rotation);
 	}
 }

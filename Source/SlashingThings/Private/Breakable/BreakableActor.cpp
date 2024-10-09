@@ -2,7 +2,9 @@
 
 
 #include "Breakable/BreakableActor.h"
+#include "Components/CapsuleComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
+#include "Items/Treasure.h"
 
 ABreakableActor::ABreakableActor()
 {
@@ -14,7 +16,10 @@ ABreakableActor::ABreakableActor()
 	GeometryCollection->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GeometryCollection->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
-
+	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	Capsule->SetupAttachment(GetRootComponent());
+	Capsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Capsule->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 }
 
 void ABreakableActor::BeginPlay()
@@ -31,5 +36,13 @@ void ABreakableActor::Tick(float DeltaTime)
 
 void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint)
 {
+	UWorld* World = GetWorld();
+	if (World && TreasureClass)
+	{
+		FVector Location = GetActorLocation();
+		Location.Z += 80.f;
+		World->SpawnActor<ATreasure>(TreasureClass, Location, GetActorRotation());
+	}
+
 }
 
