@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
+#include "NiagaraComponent.h"
 
 AWeapon::AWeapon()
 {
@@ -19,6 +20,7 @@ AWeapon::AWeapon()
 
 	BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
 	BoxTraceStart->SetupAttachment(GetRootComponent());
+
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
 	BoxTraceEnd->SetupAttachment(GetRootComponent());
 
@@ -48,6 +50,11 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 	}
 	IgnoreActors.Empty();
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (EmbersEffect)
+	{
+		EmbersEffect->Deactivate();
+	}
+
 }
 
 void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName)
