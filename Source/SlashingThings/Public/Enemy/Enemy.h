@@ -27,6 +27,9 @@ public:
 
 private:
 
+	UPROPERTY(VisibleAnywhere)
+	class UAttrComponent* Attributes;
+
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 
