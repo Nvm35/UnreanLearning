@@ -24,3 +24,14 @@ void UAttrComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 }
 
+void UAttrComponent::ReceiveDamage(float Damage)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+
+}
+
+float UAttrComponent::GetHealthPercent()
+{
+	return Health / MaxHealth;
+}
+
