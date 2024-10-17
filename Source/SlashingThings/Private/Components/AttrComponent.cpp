@@ -35,3 +35,8 @@ float UAttrComponent::GetHealthPercent()
 	return Health / MaxHealth;
 }
 
+bool UAttrComponent::IsAlive()
+{
+	return Health > 0.f;
+}
+
