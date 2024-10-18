@@ -4,6 +4,7 @@
 #include "Enemy/Enemy.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "SlashingThings/DebugMacros.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,12 +24,19 @@ AEnemy::AEnemy()
 	Attributes = CreateDefaultSubobject<UAttrComponent>(TEXT("Attributes"));
 	HealthBarComponent = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
 	HealthBarComponent->SetupAttachment(GetRootComponent());
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HealthBarComponent->SetVisibility(false);
 }
 
 void AEnemy::Die()
@@ -43,17 +51,23 @@ void AEnemy::Die()
 		{
 		case 0:
 			SectionName = FName("Death 1");
+			DeathPose = EDeathPose::EDP_Death1;
 			break;
 		case 1:
 			SectionName = FName("Death 2");
+			DeathPose = EDeathPose::EDP_Death2;
 			break;
 		default:
 			break;
 		}
 
 		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
+		HealthBarComponent->SetVisibility(false);
+
 	}
 
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(3.f);
 }
 
 void AEnemy::PlayHitReactMontage(const FName& SectionName)
@@ -70,6 +84,15 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CombatTarget)
+	{
+		const double DistanceToTarget = (CombatTarget->GetActorLocation() - GetActorLocation()).Size();
+		if (DistanceToTarget > CombatRadius)
+		{
+			CombatTarget = nullptr;
+			HealthBarComponent->SetVisibility(false);
+		}
+	}
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -81,6 +104,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 {
 	//DRAW_SPHERE_WITH_COLOR(ImpactPoint, FColor::Magenta);
+	HealthBarComponent->SetVisibility(true);
 
 	if (Attributes && Attributes->IsAlive())
 	{
@@ -165,7 +189,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 
 	}
-
+	CombatTarget = EventInstigator->GetPawn();
 	return DamageAmount;
 }
 

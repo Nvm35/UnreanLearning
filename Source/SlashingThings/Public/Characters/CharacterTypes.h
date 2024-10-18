@@ -15,3 +15,11 @@ enum class EActionState : uint8
 	EAS_Attacking UMETA(DisplayName = "Attacking"),
 	EAS_Equipping UMETA(DisplayName = "Equipping")
 };
+
+UENUM(BlueprintType)
+enum class EDeathPose : uint8
+{
+	EDP_Alive UMETA(DisplayName = "Alive"),
+	EDP_Death1 UMETA(DisplayName = "Death 1"),
+	EDP_Death2 UMETA(DisplayName = "Death 2")
+};
