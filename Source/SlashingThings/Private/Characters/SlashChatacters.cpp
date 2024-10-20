@@ -40,7 +40,7 @@ ASlashChatacters::ASlashChatacters()
 void ASlashChatacters::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Tags.Add(FName("SlashCharacter"));
 }
 
 void ASlashChatacters::MoveForward(float Value)

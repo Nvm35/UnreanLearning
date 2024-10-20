@@ -4,6 +4,7 @@
 #include "Enemy/Enemy.h"
 #include "AIController.h"
 #include "NavigationData.h"
+#include "Perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -33,6 +34,9 @@ AEnemy::AEnemy()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 3000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
 }
 
 void AEnemy::PatrolTimerFinished()
@@ -49,6 +53,10 @@ void AEnemy::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(PatrolTarget);
 
+	if (PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
+	}
 }
 
 void AEnemy::Die()
@@ -102,6 +110,19 @@ void AEnemy::MoveToTarget(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
+void AEnemy::PawnSeen(APawn* SeenPawn)
+{
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		GetWorldTimerManager().ClearTimer(PatrolTImer);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		CombatTarget = SeenPawn;
+		MoveToTarget(CombatTarget);
+	}
+}
+
 AActor* AEnemy::ChoosePatrolTarget()
 {
 	TArray<AActor*> ValidTargets;
@@ -134,20 +155,24 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CombatTarget)
+	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
-		if (!InTargetRange(CombatTarget, CombatRadius))
+		if (CombatTarget)
 		{
-			CombatTarget = nullptr;
-			HealthBarComponent->SetVisibility(false);
+			if (!InTargetRange(CombatTarget, CombatRadius))
+			{
+				CombatTarget = nullptr;
+				HealthBarComponent->SetVisibility(false);
+			}
 		}
 	}
-
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	else
 	{
-		PatrolTarget = ChoosePatrolTarget();
-		GetWorldTimerManager().SetTimer(PatrolTImer, this, &AEnemy::PatrolTimerFinished, 5.f);
-
+		if (InTargetRange(PatrolTarget, PatrolRadius))
+		{
+			PatrolTarget = ChoosePatrolTarget();
+			GetWorldTimerManager().SetTimer(PatrolTImer, this, &AEnemy::PatrolTimerFinished, 5.f);
+		}
 	}
 
 }
