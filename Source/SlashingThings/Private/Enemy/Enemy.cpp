@@ -157,13 +157,13 @@ void AEnemy::Tick(float DeltaTime)
 
 	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
-		if (CombatTarget)
+		if (!InTargetRange(CombatTarget, CombatRadius))
 		{
-			if (!InTargetRange(CombatTarget, CombatRadius))
-			{
-				CombatTarget = nullptr;
-				HealthBarComponent->SetVisibility(false);
-			}
+			CombatTarget = nullptr;
+			HealthBarComponent->SetVisibility(false);
+			EnemyState = EEnemyState::EES_Patrolling;
+			GetCharacterMovement()->MaxWalkSpeed = 125.f;
+			MoveToTarget(PatrolTarget);
 		}
 	}
 	else
