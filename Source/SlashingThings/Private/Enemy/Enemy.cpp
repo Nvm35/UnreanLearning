@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Enemy/Enemy.h"
 #include "AIController.h"
-#include "NavigationData.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -83,7 +81,6 @@ void AEnemy::Die()
 
 		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 		HealthBarComponent->SetVisibility(false);
-
 	}
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -94,8 +91,6 @@ bool AEnemy::InTargetRange(AActor* Target, double Radius)
 {
 	if (Target == nullptr) return false;
 	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	DRAW_SPHERE_SINGLEFRAME(GetActorLocation());
-	DRAW_SPHERE_SINGLEFRAME(Target->GetActorLocation());
 	return DistanceToTarget <= Radius;
 }
 
@@ -115,7 +110,6 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	if (SeenPawn->ActorHasTag(FName("SlashCharacter")))
 	{
-
 		GetWorldTimerManager().ClearTimer(PatrolTImer);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		CombatTarget = SeenPawn;
@@ -176,13 +170,11 @@ void AEnemy::Tick(float DeltaTime)
 			EnemyState = EEnemyState::EES_Chasing;
 			GetCharacterMovement()->MaxWalkSpeed = 300.f;
 			MoveToTarget(CombatTarget);
-
 		}
 		else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 		{
 			//inside Attack range
 			EnemyState = EEnemyState::EES_Attacking;
-			UE_LOG(LogTemp, Warning, TEXT("ATTACK!!!"));
 		}
 	}
 	else
@@ -193,13 +185,11 @@ void AEnemy::Tick(float DeltaTime)
 			GetWorldTimerManager().SetTimer(PatrolTImer, this, &AEnemy::PatrolTimerFinished, 5.f);
 		}
 	}
-
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
@@ -210,7 +200,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 	if (Attributes && Attributes->IsAlive())
 	{
 		DirectionalHitReact(ImpactPoint);
-
 	}
 	else
 	{
@@ -282,15 +271,17 @@ void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
 	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Purple, 8.f, 2.f);*/
 }
 
-float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                         AActor* DamageCauser)
 {
 	if (Attributes && HealthBarComponent)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
-
 	}
 	CombatTarget = EventInstigator->GetPawn();
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	MoveToTarget(CombatTarget);
 	return DamageAmount;
 }
-
