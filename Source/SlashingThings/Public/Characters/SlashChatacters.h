@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "CharacterTypes.h"
 #include "SlashChatacters.generated.h"
 
@@ -14,7 +14,7 @@ class UAnimMontage;
 class AWeapon;
 
 UCLASS()
-class SLASHINGTHINGS_API ASlashChatacters : public ACharacter
+class SLASHINGTHINGS_API ASlashChatacters : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -25,13 +25,13 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	FORCEINLINE void SetOverlappingItem(AItem* Item) {
+	FORCEINLINE void SetOverlappingItem(AItem* Item)
+	{
 		OverlappingItem = Item;
 	}
 
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
-
 
 	FORCEINLINE ECharacterState GetChState() const { return CharacterState; };
 
@@ -58,7 +58,6 @@ protected:
 	void FinishEquipping();
 
 private:
-
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
