@@ -1,4 +1,3 @@
-
 #include "Characters/SlashChatacters.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -7,7 +6,6 @@
 #include "Items/Item.h"
 #include "Items/Weapon/Weapon.h"
 #include "Animation/AnimMontage.h"
-#include "Components/BoxComponent.h"
 
 ASlashChatacters::ASlashChatacters()
 {
@@ -34,7 +32,6 @@ ASlashChatacters::ASlashChatacters()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("eyebrows");
-
 }
 
 void ASlashChatacters::BeginPlay()
@@ -82,18 +79,14 @@ void ASlashChatacters::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
-void ASlashChatacters::SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled)
+bool ASlashChatacters::CanAttack()
 {
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
-	{
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->IgnoreActors.Empty();
-	}
+	return ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 void ASlashChatacters::Attack()
 {
-	if (ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unequipped)
+	if (CanAttack())
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
@@ -103,7 +96,8 @@ void ASlashChatacters::Attack()
 void ASlashChatacters::EKeyPressed()
 {
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
-	if (OverlappingWeapon && !EquippedWeapon) {
+	if (OverlappingWeapon && !EquippedWeapon)
+	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
 		OverlappingWeapon->SetOwner(this);
 		OverlappingWeapon->SetInstigator(this);
@@ -119,7 +113,8 @@ void ASlashChatacters::EKeyPressed()
 			CharacterState = ECharacterState::ECS_Unequipped;
 			ActionState = EActionState::EAS_Equipping;
 		}
-		else if (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_Unequipped && EquippedWeapon)
+		else if (ActionState == EActionState::EAS_Unoccupied && CharacterState == ECharacterState::ECS_Unequipped &&
+			EquippedWeapon)
 		{
 			PlayEquipMontage(FName("Equip"));
 			CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
@@ -154,7 +149,6 @@ void ASlashChatacters::PlayAttackMontage()
 			break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-
 	}
 }
 
@@ -184,7 +178,7 @@ void ASlashChatacters::Arm()
 	}
 }
 
-void ASlashChatacters::FinishEquipping()
+void ASlashChatacters::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
@@ -192,7 +186,6 @@ void ASlashChatacters::FinishEquipping()
 void ASlashChatacters::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -206,9 +199,4 @@ void ASlashChatacters::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(FName("PickUp"), IE_Pressed, this, &ASlashChatacters::EKeyPressed);
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &ASlashChatacters::Attack);
-
 }
-
-
-
-

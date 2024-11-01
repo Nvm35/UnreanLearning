@@ -30,9 +30,6 @@ public:
 		OverlappingItem = Item;
 	}
 
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
-
 	FORCEINLINE ECharacterState GetChState() const { return CharacterState; };
 
 protected:
@@ -42,10 +39,11 @@ protected:
 	void MoveSides(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	virtual bool CanAttack() override;
 	void EKeyPressed();
-	void Attack();
+	virtual void Attack() override;
 
-	void PlayAttackMontage();
+	virtual void PlayAttackMontage() override;
 	void PlayEquipMontage(FName SectionName);
 
 	UFUNCTION(BlueprintCallable)
@@ -54,8 +52,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Arm();
 
-	UFUNCTION(BlueprintCallable)
-	void FinishEquipping();
+	virtual void AttackEnd() override;
 
 private:
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
@@ -80,12 +77,7 @@ private:
 
 	// Montages
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage;
-
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	AWeapon* EquippedWeapon;
 };
