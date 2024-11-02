@@ -21,14 +21,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Attack();
+	virtual void Die();
+
 
 	virtual void PlayAttackMontage();
+	void PlayHitReactMontage(const FName& SectionName);
+
 
 	virtual bool CanAttack();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void AttackEnd();
-
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	AWeapon* EquippedWeapon;

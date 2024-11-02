@@ -81,17 +81,14 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
-	void Die();
+	virtual void Die() override;
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
-
-
-	void PlayHitReactMontage(const FName& SectionName);
-
+	
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 };

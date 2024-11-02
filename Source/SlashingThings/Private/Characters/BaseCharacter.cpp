@@ -16,8 +16,22 @@ void ABaseCharacter::Attack()
 {
 }
 
+void ABaseCharacter::Die()
+{
+}
+
 void ABaseCharacter::PlayAttackMontage()
 {
+}
+
+void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	}
 }
 
 bool ABaseCharacter::CanAttack()
