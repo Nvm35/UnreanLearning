@@ -2,12 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/HitInterface.h"
 #include "BaseCharacter.generated.h"
 
 class AWeapon;
+class UAnimMontage;
 
 UCLASS()
-class SLASHINGTHINGS_API ABaseCharacter : public ACharacter
+class SLASHINGTHINGS_API ABaseCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -26,7 +28,7 @@ protected:
 
 	virtual void PlayAttackMontage();
 	void PlayHitReactMontage(const FName& SectionName);
-
+	void DirectionalHitReact(const FVector& ImpactPoint);
 
 	virtual bool CanAttack();
 
@@ -39,4 +41,19 @@ protected:
 	//anims
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(VisibleAnywhere)
+	class UAttrComponent* Attributes;
+
+	UPROPERTY(EditAnywhere, Category = Sounds)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = VisualEffects)
+	UParticleSystem* HitParticles;
 };
