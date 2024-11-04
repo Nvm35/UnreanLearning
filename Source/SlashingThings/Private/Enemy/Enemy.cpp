@@ -10,6 +10,7 @@
 #include "Components/AttrComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "HUD/HealthBarComponent.h"
+#include "Items/Weapon/Weapon.h"
 
 AEnemy::AEnemy()
 {
@@ -32,6 +33,14 @@ AEnemy::AEnemy()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 3000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
+
+	HandCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("HandCollision"));
+	HandCollision->SetupAttachment(GetMesh(), TEXT("RightHandSocket"));
+
+	HandCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Disabled initially
+	HandCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	HandCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	HandCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void AEnemy::PatrolTimerFinished()
@@ -52,6 +61,8 @@ void AEnemy::BeginPlay()
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
+
+	//	HandCollision->OnComponentBeginOverlap.AddDynamic(this, );
 }
 
 void AEnemy::Die()
@@ -224,4 +235,12 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	MoveToTarget(CombatTarget);
 	return DamageAmount;
+}
+
+void AEnemy::Destroyed()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+	}
 }

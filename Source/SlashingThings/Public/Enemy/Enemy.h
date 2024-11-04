@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
 #include "Characters/CharacterTypes.h"
+#include "Components/BoxComponent.h"
 #include "Enemy.generated.h"
 
 class UPawnSensingComponent;
@@ -23,6 +24,7 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	                         class AController* EventInstigator, AActor* DamageCauser);
+	virtual void Destroyed() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -72,4 +74,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	UBoxComponent* HandCollision;
 };

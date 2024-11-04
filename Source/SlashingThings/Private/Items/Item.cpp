@@ -9,6 +9,8 @@ AItem::AItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
+	ItemMesh->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = ItemMesh;
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
@@ -24,7 +26,6 @@ void AItem::BeginPlay()
 
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
 	Sphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnEndOverlap);
-
 }
 
 float AItem::TransformedSin()
@@ -37,18 +38,23 @@ float AItem::TransformedCos()
 	return Amplitude * FMath::Cos(RunningTime * TimeConstant);
 }
 
-void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                            const FHitResult& SweepResult)
 {
 	ASlashChatacters* SlashCharacter = Cast<ASlashChatacters>(OtherActor);
-	if (SlashCharacter) {
+	if (SlashCharacter)
+	{
 		SlashCharacter->SetOverlappingItem(this);
 	}
 }
 
-void AItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                         int32 OtherBodyIndex)
 {
 	ASlashChatacters* SlashCharacter = Cast<ASlashChatacters>(OtherActor);
-	if (SlashCharacter) {
+	if (SlashCharacter)
+	{
 		SlashCharacter->SetOverlappingItem(nullptr);
 	}
 }
