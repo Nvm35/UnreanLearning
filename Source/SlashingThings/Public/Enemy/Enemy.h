@@ -37,7 +37,7 @@ private:
 	double CombatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
-	double AttackRadius = 150.f;
+	double AttackRadius = 140.f;
 
 	//Navigation
 
@@ -68,6 +68,13 @@ protected:
 	bool InTargetRange(AActor* Target, double Radius);
 	void MoveToTarget(AActor* Target);
 	AActor* ChoosePatrolTarget();
+	virtual void Attack() override;
+	virtual void PlayAttackMontage() override;
+
+	UFUNCTION()
+	void OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                   const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);

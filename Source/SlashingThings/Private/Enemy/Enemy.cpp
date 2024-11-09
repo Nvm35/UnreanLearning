@@ -62,7 +62,20 @@ void AEnemy::BeginPlay()
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemy::PawnSeen);
 	}
 
-	//	HandCollision->OnComponentBeginOverlap.AddDynamic(this, );
+	HandCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnHandOverlap);
+}
+
+void AEnemy::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                           const FHitResult& SweepResult)
+{
+	// Check if the overlapping actor is the player (or another target)
+	if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
+	{
+		
+		// Apply damage to the player
+	//	UGameplayStatics::ApplyDamage(OtherActor, DamageAmount, GetController(), this, UDamageType::StaticClass());
+	}
 }
 
 void AEnemy::Die()
@@ -108,7 +121,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(15.f);
+	MoveRequest.SetAcceptanceRadius(60.f);
 
 	EnemyController->MoveTo(MoveRequest);
 }
@@ -148,6 +161,37 @@ AActor* AEnemy::ChoosePatrolTarget()
 	return nullptr;
 }
 
+void AEnemy::Attack()
+{
+	Super::Attack();
+	PlayAttackMontage();
+}
+
+void AEnemy::PlayAttackMontage()
+{
+	Super::PlayAttackMontage();
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		int32 Selection = FMath::RandRange(0, 1);
+		FName SectionName = FName();
+		switch (Selection)
+		{
+		default:
+			break;
+		case 0:
+			SectionName = FName("AttackRight");
+			break;
+
+		case 1:
+			SectionName = FName("AttackLeft");
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+}
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -173,6 +217,7 @@ void AEnemy::Tick(float DeltaTime)
 		{
 			//inside Attack range
 			EnemyState = EEnemyState::EES_Attacking;
+			Attack();
 		}
 	}
 	else
