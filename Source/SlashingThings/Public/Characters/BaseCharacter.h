@@ -24,11 +24,15 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Attack();
 	virtual void Die();
+	bool isAlive();
 
 
 	virtual void PlayAttackMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	void DirectionalHitReact(const FVector& ImpactPoint);
+	void PlayHitSound(const FVector& ImpactPoint);
+	void SpawnHitParticles(const FVector& ImpactPoint);
+	virtual void Handledamage(float DamageAmount);
 
 	virtual bool CanAttack();
 
@@ -51,6 +55,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UAttrComponent* Attributes;
 
+private:
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
 
