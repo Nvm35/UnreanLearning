@@ -124,34 +124,6 @@ void ASlashChatacters::EKeyPressed()
 }
 
 
-void ASlashChatacters::PlayAttackMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && AttackMontage)
-	{
-		AnimInstance->Montage_Play(AttackMontage);
-		int32 Selection = FMath::RandRange(0, 2);
-		FName SectionName = FName();
-		switch (Selection)
-		{
-		default:
-			break;
-		case 0:
-			SectionName = FName("one");
-			break;
-
-		case 1:
-			SectionName = FName("two");
-			break;
-
-		case 2:
-			SectionName = FName("three");
-			break;
-		}
-		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-	}
-}
-
 void ASlashChatacters::PlayEquipMontage(FName SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

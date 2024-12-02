@@ -27,12 +27,13 @@ protected:
 	bool isAlive();
 
 
-	virtual void PlayAttackMontage();
 	void PlayHitReactMontage(const FName& SectionName);
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	virtual void Handledamage(float DamageAmount);
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionMontage);
+	void PlayAttackMontage();
 
 	virtual bool CanAttack();
 
@@ -43,6 +44,9 @@ protected:
 	AWeapon* EquippedWeapon;
 
 	//anims
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TArray<FName> AttackMontageSection;
+
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
 

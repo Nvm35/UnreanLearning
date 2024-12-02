@@ -42,7 +42,6 @@ protected:
 	void EKeyPressed();
 	virtual void Attack() override;
 
-	virtual void PlayAttackMontage() override;
 	void PlayEquipMontage(FName SectionName);
 
 	UFUNCTION(BlueprintCallable)

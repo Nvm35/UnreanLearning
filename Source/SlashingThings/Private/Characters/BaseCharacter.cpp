@@ -30,10 +30,6 @@ bool ABaseCharacter::isAlive()
 	return Attributes && Attributes->IsAlive();
 }
 
-void ABaseCharacter::PlayAttackMontage()
-{
-}
-
 void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -119,6 +115,24 @@ void ABaseCharacter::Handledamage(float DamageAmount)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 	}
+}
+
+void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionMontage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Play(Montage);
+		AnimInstance->Montage_JumpToSection(SectionMontage, Montage);
+	}
+}
+
+void ABaseCharacter::PlayAttackMontage()
+{
+	if (AttackMontageSection.Num() <= 0) return;
+	const int32 MaxSectionIndex = AttackMontageSection.Num() - 1;
+	const int32 Section = FMath::RandRange(0, MaxSectionIndex);
+	PlayMontageSection(AttackMontage, AttackMontageSection[Section]);
 }
 
 bool ABaseCharacter::CanAttack()
