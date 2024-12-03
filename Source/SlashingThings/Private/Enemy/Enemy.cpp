@@ -10,7 +10,6 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "HUD/HealthBarComponent.h"
 #include "Items/Weapon/Weapon.h"
-#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
 AEnemy::AEnemy()
 {
@@ -132,32 +131,12 @@ void AEnemy::OnHandOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AEnemy::Die()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && DeathMontage)
-	{
-		AnimInstance->Montage_Play(DeathMontage);
-		const int32 Section = FMath::RandRange(0, 1);
-		FName SectionName = FName();
-		switch (Section)
-		{
-		case 0:
-			SectionName = FName("Death 1");
-			DeathPose = EDeathPose::EDP_Death1;
-			break;
-		case 1:
-			SectionName = FName("Death 2");
-			DeathPose = EDeathPose::EDP_Death2;
-			break;
-		default:
-			break;
-		}
-
-		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
-		HealthBarComponent->SetVisibility(false);
-	}
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	EnemyState = EEnemyState::EES_Dead;
+	PlayDeathMontage();
+	HideHealthBar();
+	DisableCapsule();
 	SetLifeSpan(3.f);
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 bool AEnemy::InTargetRange(AActor* Target, double Radius)
@@ -249,14 +228,6 @@ void AEnemy::CheckCombatTarget()
 			StartAttackTimer();
 		}
 	}
-	/*	else
-		{
-			if (InTargetRange(PatrolTarget, PatrolRadius))
-			{
-				PatrolTarget = ChoosePatrolTarget();
-				GetWorldTimerManager().SetTimer(PatrolTImer, this, &AEnemy::PatrolTimerFinished, 5.f);
-			}
-		}*/
 }
 
 void AEnemy::Handledamage(float DamageAmount)
@@ -267,6 +238,17 @@ void AEnemy::Handledamage(float DamageAmount)
 	{
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 	}
+}
+
+int32 AEnemy::PlayDeathMontage()
+{
+	const int32 Selection = Super::PlayDeathMontage();
+	TEnumAsByte<EDeathPose> Pose(Selection);
+	if (Pose < EDeathPose::EDP_MAX)
+	{
+		DeathPose = Pose;
+	}
+	return Selection;
 }
 
 void AEnemy::Tick(float DeltaTime)

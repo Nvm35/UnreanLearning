@@ -28,12 +28,15 @@ protected:
 
 
 	void PlayHitReactMontage(const FName& SectionName);
+	void DisableCapsule();
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
 	virtual void Handledamage(float DamageAmount);
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionMontage);
-	void PlayAttackMontage();
+	virtual int32 PlayAttackMontage();
+	virtual int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionName);
+	virtual int32 PlayDeathMontage();
 
 	virtual bool CanAttack();
 
@@ -46,6 +49,9 @@ protected:
 	//anims
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> AttackMontageSection;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TArray<FName> DeathMontageSection;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
