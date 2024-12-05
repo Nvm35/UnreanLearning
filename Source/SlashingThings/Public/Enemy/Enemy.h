@@ -36,7 +36,7 @@ private:
 	double CombatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
-	double AttackRadius = 140.f;
+	double AttackRadius = 150.f;
 
 	//Navigation
 
@@ -94,6 +94,7 @@ protected:
 	void CheckCombatTarget();
 	virtual void Handledamage(float DamageAmount) override;
 	virtual int32 PlayDeathMontage() override;
+	virtual void AttackEnd() override;
 
 
 	UFUNCTION()
